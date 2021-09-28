@@ -1,33 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import userService from "../services/user.service";
 
-import UserService from "../services/user.service";
-
-const Home = () => {
-  const [content, setContent] = useState("");
+export default function Home() {
+  const [users, setUsers] = useState([]);
+  const { user: currentUser } = useSelector((state) => state.auth);
+  console.log(`Home`, currentUser);
 
   useEffect(() => {
-    UserService.getPublicContent().then(
-      (response) => {
-        setContent(response.data);
-      },
-      (error) => {
-        const _content =
-          (error.response && error.response.data) ||
-          error.message ||
-          error.toString();
+    fetchUsers();
+  }, [currentUser]);
 
-        setContent(_content);
-      }
+  async function fetchUsers() {
+    const { data } = await userService.getAll();
+    setUsers(data);
+  }
+
+  if (!currentUser.roles.includes("ROLE_ADMIN"))
+    return (
+      <div className="container">
+        <h5>User List</h5>
+        <p>Not authorized!</p>
+      </div>
     );
-  }, []);
 
   return (
-    <div className="container">
-      <header className="jumbotron">
-        <h3>{content}</h3>
-      </header>
+    <div className="container pt-5">
+      <h5 className="text-center mb-5">User List</h5>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user, index) => (
+            <tr key={user.id}>
+              <th scope="row">{index + 1}</th>
+              <td>{user.username}</td>
+              <td>{user.email}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-export default Home;
+}

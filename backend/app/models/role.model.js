@@ -1,24 +1,25 @@
-module.exports = (sequelize, Sequelize, DataTypes) => {
-  const Role = sequelize.define(
-    "role", // Model name
-    {
-      // Attributes
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true
-      },
-      name: {
-        type: DataTypes.STRING
-      }
-    },
-    {
-      // Options
-      timestamps: true,
-      underscrored: true,
-      createdAt: "created_at",
-      updatedAt: "updated_at"
-    }
-  );
+const { DataTypes } = require("sequelize");
 
-  return Role;
-};
+module.exports = model;
+
+function model(sequelize) {
+  const attributes = {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+    },
+  };
+
+  const options = {
+    // Options
+    timestamps: true,
+    underscrored: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  };
+
+  return sequelize.define("role", attributes, options);
+}

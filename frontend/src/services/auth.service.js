@@ -1,36 +1,30 @@
+import { handleError } from "./utils";
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
+import { API_URL } from "./config";
 
-const API_URL = "http://localhost:8080/api/auth/";
+const baseUrl = `${API_URL}/api/auth/`;
 
-const register = ({ username, email, password }) => {
-  return axios.post(API_URL + "signup", {
-    username,
-    email,
-    password,
-  });
+const authService = {
+  register: (user) => {
+    console.log(`authService`, baseUrl, user);
+    try {
+      return axios.post(baseUrl + "signup", user);
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+  login: (user) => {
+    try {
+      return axios.post(baseUrl + "signin", user);
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+
+  logout: () => {
+    localStorage.removeItem("user");
+  },
 };
 
-const login = ({ email, password }) => {
-  return axios
-    .post(API_URL + "signin", {
-      email,
-      password,
-    })
-    .then((response) => {
-      if (response.data.accessToken) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-      }
-
-      return response.data;
-    });
-};
-
-const logout = () => {
-  localStorage.removeItem("user");
-};
-
-export default {
-  register,
-  login,
-  logout,
-};
+export default authService;

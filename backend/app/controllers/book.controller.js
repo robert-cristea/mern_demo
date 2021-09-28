@@ -1,4 +1,4 @@
-const db = require("../models");
+const db = require("../db");
 const Book = db.books;
 const Op = db.Op;
 

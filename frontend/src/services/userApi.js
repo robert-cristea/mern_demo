@@ -1,15 +1,10 @@
-import axios from "axios";
-import authHeader from "./auth-header";
 import { handleError } from "./utils";
 import axiosInstance from "./axiosInstance";
-import { API_URL } from "./config";
 
-const baseUrl = `${API_URL}/api/user/`;
-
-const userService = {
+const userApi = {
   getAll: async () => {
     try {
-      return await axiosInstance.get(`api/user/`, { headers: authHeader() });
+      return await axiosInstance.get(`api/user/`);
     } catch (error) {
       return handleError(error);
     }
@@ -44,4 +39,4 @@ const userService = {
   },
 };
 
-export default userService;
+export default userApi;

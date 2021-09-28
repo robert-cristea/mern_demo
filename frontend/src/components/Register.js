@@ -5,12 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-import authActions from "../actions/auth";
+import authActions from "../redux/auth/actions";
 
 function Register() {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { loading } = useSelector((state) => state.auth);
 
   const validationSchema = yup.object().shape({
     email: yup
@@ -36,14 +36,8 @@ function Register() {
   });
   const { errors } = formState;
 
-  useEffect(() => {
-    console.log(`errors`, errors);
-  }, [errors]);
-
   function onSubmit(data) {
-    console.log("onSubmit", data);
     dispatch(authActions.register(data, history));
-    return false;
   }
 
   return (
@@ -116,7 +110,13 @@ function Register() {
             </div>
 
             <div className="form-group">
-              <button className="btn btn-primary btn-block">Sign Up</button>
+              <button className="btn btn-primary btn-block" disabled={loading}>
+                {loading ? (
+                  <span className="spinner-border spinner-border-sm"></span>
+                ) : (
+                  <span>Sign up</span>
+                )}
+              </button>
             </div>
           </div>
         </form>

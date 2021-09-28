@@ -6,8 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import classNames from "classnames";
 import { useHistory } from "react-router-dom";
-
-import authActions from "../actions/auth";
+import authActions from "../redux/auth/actions";
 
 function Login(props) {
   const dispatch = useDispatch();
@@ -31,9 +30,7 @@ function Login(props) {
   const { errors } = formState;
 
   function onSubmit(data) {
-    console.log("onSubmit", data);
     dispatch(authActions.login(data, history));
-    return false;
   }
 
   return (
@@ -49,9 +46,11 @@ function Login(props) {
               type="text"
               className="form-control"
             />
-            <div className="alert alert-danger" role="alert">
-              {errors.email?.message}
-            </div>
+            {errors.email?.message && (
+              <div className="alert alert-danger" role="alert">
+                {errors.email.message}
+              </div>
+            )}
           </div>
 
           <div className="form-group">
@@ -63,9 +62,11 @@ function Login(props) {
               type="password"
               className="form-control"
             />
-            <div className="alert alert-danger" role="alert">
-              {errors.password?.message}
-            </div>
+            {errors.password?.message && (
+              <div className="alert alert-danger" role="alert">
+                {errors.password.message}
+              </div>
+            )}
           </div>
 
           <div className="form-group">
