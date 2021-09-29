@@ -18,18 +18,16 @@ const checkRole = (roles) => async (req, res, next) => {
   console.log("middleware->checkRole: roles", roles);
 
   const user = await db.user.findByPk(req.user.id);
-  let userRoles = await user.getRoles();
-  let arr = userRoles.map((role) => role.name);
+  let userRole = await user.getRole();
+  console.log("middleware->checkRole: userRole", userRole);
 
-  console.log("middleware->userRoles: userRoles", userRoles);
-
-  if (!user || (roles.length && !roles.some((r) => arr.includes(r)))) {
+  if (!user || (roles.length && !roles.includes(userRole.name))) {
     // account no longer exists or role not authorized
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   // authentication and authorization successful
-  req.user.role = userRoles;
+  req.user.role = userRole;
   next();
 };
 

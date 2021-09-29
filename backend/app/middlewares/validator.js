@@ -9,9 +9,9 @@ module.exports.validate = (method) => {
         check("username", "username is required").not().isEmpty(),
         check("email", "email is not valid").isEmail(),
         check("password", "password is not valid").isLength({ min: 8 }),
-        check("roles", "roles are not valid")
+        check("role", "role is not valid")
           .optional()
-          .isIn(["user", "admin"]),
+          .isIn(["customer", "vendor", "admin"]),
       ];
     }
     case "signin": {
@@ -59,12 +59,18 @@ module.exports.validate = (method) => {
         check("username", "username is required").not().isEmpty(),
         check("email", "email is not valid").isEmail(),
         check("password", "password is invalid").isLength({ min: 8 }),
+        check("role", "role is not valid")
+          .optional()
+          .isIn(["customer", "vendor", "admin"]),
       ];
     }
     case "updateUser": {
       return [
         check("username", "username is required").not().isEmpty(),
         check("email", "email is not valid").isEmail(),
+        check("role", "role is not valid")
+          .optional()
+          .isIn(["customer", "vendor", "admin"]),
       ];
     }
   }

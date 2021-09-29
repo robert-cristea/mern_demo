@@ -36,21 +36,21 @@ async function initialize() {
   db.user = require("../models/user.model.js")(sequelize);
   db.role = require("../models/role.model.js")(sequelize);
 
-  db.role.belongsToMany(db.user, {
-    through: "user_roles",
-    foreignKey: "role_id",
-    otherKey: "user_id",
-  });
-  db.user.belongsToMany(db.role, {
-    through: "user_roles",
-    foreignKey: "user_id",
-    otherKey: "role_id",
-  });
+  db.user.belongsTo(db.role);
+  // db.role.belongsToMany(db.user, {
+  //   through: "user_roles",
+  //   foreignKey: "role_id",
+  //   otherKey: "user_id",
+  // });
+  // db.user.belongsToMany(db.role, {
+  //   through: "user_roles",
+  //   foreignKey: "user_id",
+  //   otherKey: "role_id",
+  // });
 
   //   db.sequelize = sequelize;
 
   db.ROLES = ["user", "admin"];
 
-  // sync all models with database
   await sequelize.sync();
 }

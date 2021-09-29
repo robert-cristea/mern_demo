@@ -15,7 +15,7 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, email, password, roles } = req.body;
+    const { username, email, password, role: roleName } = req.body;
     let user;
 
     // Username and Email unique
@@ -49,18 +49,16 @@ exports.signup = async (req, res) => {
       password: bcrypt.hashSync(password, 8),
     });
 
-    if (roles) {
-      const array = await db.role.findAll({
+    if (roleName) {
+      const role = await db.role.findOne({
         where: {
-          name: {
-            [Op.or]: roles,
-          },
+          name: roleName,
         },
       });
-      await user.setRoles(array);
+      await user.setRole(role);
       res.send({ message: "User was registered successfully!" });
     } else {
-      await user.setRoles([1]);
+      await user.setRole([3]);
       res.send({ message: "User was registered successfully!" });
     }
   } catch (error) {
@@ -97,34 +95,24 @@ exports.signin = async (req, res) => {
       return res.status(404).send({ message: "User Not found." });
     }
 
-    console.log(`@@@user`, user, password);
+    console.log(`auth.controller->signin`, user.password, password);
 
     let passwordIsValid = bcrypt.compareSync(password, user.password);
-
     if (!passwordIsValid) {
       return res.status(401).send({
         accessToken: null,
         message: "Invalid Password!",
       });
     }
-
-    console.log(`@user->passwordIsValid`, passwordIsValid);
-
     let token = generateJWTToken(user);
 
-    let authorities = [];
-    user.getRoles().then((roles) => {
-      for (let i = 0; i < roles.length; i++) {
-        authorities.push("ROLE_" + roles[i].name.toUpperCase());
-      }
-
-      res.status(200).send({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        roles: authorities,
-        accessToken: token,
-      });
+    let role = await user.getRole();
+    res.status(200).send({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: "ROLE_" + role.name.toUpperCase(),
+      accessToken: token,
     });
   } catch (error) {
     res.status(500).send({ message: error.message });

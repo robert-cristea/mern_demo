@@ -16,7 +16,7 @@ function model(sequelize) {
   const options = {
     // Options
     timestamps: true,
-    underscrored: true,
+    underscored: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
   };

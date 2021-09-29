@@ -15,7 +15,6 @@ exports.getAll = async function (req, res) {
 
 exports.retrieve = async function (req, res) {
   const userId = req.params.id;
-  console.log("userId", userId);
   try {
     let user = await db.user.findByPk(userId);
     return res.status(200).json(user);
@@ -29,18 +28,18 @@ exports.create = async function (req, res) {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { username, email, password, roles } = req.body;
+  const { username, email, password, role: roleName } = req.body;
 
   try {
-    let user = await db.user.findAll({
+    let user = await db.user.findOne({
       where: {
         [Op.or]: [{ username }, { email }],
       },
     });
 
-    console.log(`user->create`, user);
-    if (user.length !== 0) {
-      message = `User already exists.`;
+    console.log(`user.controller->create`, user);
+    if (user) {
+      message = `User already exists`;
       return res.status(400).json({ message });
     }
 
@@ -50,17 +49,15 @@ exports.create = async function (req, res) {
       password: bcrypt.hashSync(password, 8),
     });
 
-    if (roles) {
-      const array = await db.role.findAll({
+    if (roleName) {
+      const role = await db.role.findOne({
         where: {
-          name: {
-            [Op.or]: roles,
-          },
+          name: roleName,
         },
       });
-      await user.setRoles(array);
+      await user.setRole(role);
     } else {
-      await user.setRoles([1]);
+      await user.setRole([3]);
     }
 
     return res.status(200).json(user);
@@ -74,12 +71,12 @@ exports.update = async function (req, res) {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { username, email, password, roles } = req.body;
+  const { username, email, password, role: roleName } = req.body;
 
   try {
     const userId = req.params.id;
     let user = await db.user.findByPk(userId);
-    console.log(`user->update`, user);
+    console.log(`user.controller->update`, user);
 
     user.username = username;
     user.email = email;
@@ -99,17 +96,15 @@ exports.update = async function (req, res) {
     //   }
     // );
 
-    if (roles) {
-      const array = await db.role.findAll({
+    if (roleName) {
+      const role = await db.role.findOne({
         where: {
-          name: {
-            [Op.or]: roles,
-          },
+          name: roleName,
         },
       });
-      await user.setRoles(array);
+      await user.setRole(role);
     } else {
-      await user.setRoles([1]);
+      await user.setRole([3]);
     }
 
     return res.status(200).json(user);
@@ -127,7 +122,7 @@ exports.delete = async function (req, res) {
       message = `User with id ${userId} not found!`;
       return res.status(400).json({ message });
     }
-    console.log(`user->delete`, user);
+    console.log(`user.controller->delete`, user);
 
     await user.destroy();
 
