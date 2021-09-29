@@ -1,5 +1,6 @@
 const config = require("../config/config.js");
 const mysql = require("mysql2/promise");
+const bcrypt = require("bcryptjs");
 const { Sequelize } = require("sequelize");
 
 module.exports = db = {};
@@ -37,20 +38,40 @@ async function initialize() {
   db.role = require("../models/role.model.js")(sequelize);
 
   db.user.belongsTo(db.role);
-  // db.role.belongsToMany(db.user, {
-  //   through: "user_roles",
-  //   foreignKey: "role_id",
-  //   otherKey: "user_id",
-  // });
-  // db.user.belongsToMany(db.role, {
-  //   through: "user_roles",
-  //   foreignKey: "user_id",
-  //   otherKey: "role_id",
-  // });
 
-  //   db.sequelize = sequelize;
+  // db.sequelize = sequelize;
 
-  db.ROLES = ["user", "admin"];
+  db.ROLES = ["admin", "vendor", "customer"];
 
   await sequelize.sync();
+  if (process.env.NODE_ENV === "development") {
+    let countRoles = await db.role.count({});
+    if (countRoles === 0) {
+      await seedDatabase();
+    }
+  }
+}
+
+async function seedDatabase() {
+  let adminRole = await db.role.create({
+    id: 1,
+    name: "admin",
+  });
+  await db.role.create({
+    id: 2,
+    name: "vendor",
+  });
+  await db.role.create({
+    id: 3,
+    name: "customer",
+  });
+
+  let user = await db.user.create({
+    username: "admin",
+    email: "admin@admin.com",
+    password: bcrypt.hashSync("password", 8),
+  });
+  await user.setRole(adminRole);
+  user.verified = Date.now();
+  await user.save();
 }

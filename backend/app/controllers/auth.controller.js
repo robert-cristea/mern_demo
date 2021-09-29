@@ -58,11 +58,10 @@ exports.signup = async (req, res) => {
         },
       });
       await user.setRole(role);
-      res.send({ message: "User was registered successfully!" });
     } else {
       await user.setRole([3]);
-      res.send({ message: "User was registered successfully!" });
     }
+    res.send({ message: "User was registered successfully!" });
 
     console.log(
       `auth.controller->signup: verificationToken`,
@@ -102,7 +101,7 @@ exports.signin = async (req, res) => {
 
     let passwordIsValid = bcrypt.compareSync(password, user.password);
     if (!passwordIsValid) {
-      return res.status(401).send({
+      return res.status(400).send({
         accessToken: null,
         message: "Invalid Password!",
       });

@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
 const config = require("./app/config/config.js");
-
+const db = require("./app/db");
 const app = express();
 
 const corsOptions = {

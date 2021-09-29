@@ -9,7 +9,9 @@ export default function Dashboard() {
   console.log(`Home`, currentUser);
 
   useEffect(() => {
-    fetchUsers();
+    if (currentUser.role === "ROLE_ADMIN") {
+      fetchUsers();
+    }
   }, [currentUser]);
 
   async function fetchUsers() {
@@ -22,35 +24,36 @@ export default function Dashboard() {
     }
   }
 
-  if (!currentUser.role === "ROLE_ADMIN")
+  if (currentUser.role === "ROLE_ADMIN") {
     return (
-      <div className="container">
-        <h5>User List</h5>
-        <p>Not authorized!</p>
+      <div className="container pt-5">
+        <h5 className="text-center mb-5">User List</h5>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, index) => (
+              <tr key={user.id}>
+                <th scope="row">{index + 1}</th>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
+  }
 
   return (
-    <div className="container pt-5">
+    <div className="container">
       <h5 className="text-center mb-5">User List</h5>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user, index) => (
-            <tr key={user.id}>
-              <th scope="row">{index + 1}</th>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <p className="text-center">Not authorized!</p>
     </div>
   );
 }
