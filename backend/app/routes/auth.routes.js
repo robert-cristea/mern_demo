@@ -12,6 +12,10 @@ module.exports = function (app) {
   });
 
   app.post("/api/auth/signup", validate("signup"), controller.signup);
-
   app.post("/api/auth/signin", validate("signin"), controller.signin);
+  app.post(
+    "/api/auth/verify-email",
+    validate("verifyEmail"),
+    controller.verifyEmail
+  );
 };

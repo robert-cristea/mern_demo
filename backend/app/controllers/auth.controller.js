@@ -3,7 +3,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const db = require("../db");
 const { Op, Sequelize } = require("sequelize");
-const { generateJWTToken } = require("../utils");
+const { generateJWTToken, randomTokenString, sendEmail } = require("../utils");
 
 // const User = db.user;
 // const Role = db.role;
@@ -42,11 +42,13 @@ exports.signup = async (req, res) => {
       });
       return;
     }
+    console.log(`auth.controller->signup: user`, user);
 
     user = await db.user.create({
       username: username,
       email: email,
       password: bcrypt.hashSync(password, 8),
+      verificationToken: randomTokenString(),
     });
 
     if (roleName) {
@@ -61,6 +63,12 @@ exports.signup = async (req, res) => {
       await user.setRole([3]);
       res.send({ message: "User was registered successfully!" });
     }
+
+    console.log(
+      `auth.controller->signup: verificationToken`,
+      user.verificationToken
+    );
+    sendVerificationEmail(user, req.get("origin"));
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
@@ -68,7 +76,6 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    // Validation
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -76,13 +83,6 @@ exports.signin = async (req, res) => {
 
     const { email, password } = req.body;
     let user;
-    // if (username) {
-    //   user = await db.user.findOne({
-    //     where: {
-    //       username: username,
-    //     },
-    //   });
-    // }
     if (email) {
       user = await db.user.findOne({
         where: {
@@ -92,7 +92,10 @@ exports.signin = async (req, res) => {
     }
 
     if (!user) {
-      return res.status(404).send({ message: "User Not found." });
+      return res.status(404).send({ message: "User Not found" });
+    }
+    if (!user.verified) {
+      return res.status(403).send({ message: "Account not activated!" });
     }
 
     console.log(`auth.controller->signin`, user.password, password);
@@ -118,3 +121,52 @@ exports.signin = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { token } = req.body;
+    console.log(`auth.controller->sendVerificationEmail: token`, token);
+
+    let user = await db.user.findOne({
+      where: {
+        verificationToken: token,
+      },
+    });
+    if (!user) {
+      return res.status(400).send({ message: "token is not valid" });
+    }
+    user.verified = Date.now();
+    user.verificationToken = null;
+    await user.save();
+    res.status(200).send({ message: "Verification success" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+async function sendVerificationEmail(user, origin) {
+  let message;
+  if (origin) {
+    const verifyUrl = `${origin}/verify-email?token=${user.verificationToken}`;
+    message = `<p>Please click the below link to verify your email address:</p>
+                 <p><a href="${verifyUrl}">${verifyUrl}</a></p>`;
+  } else {
+    message = `<p>Please use the below token to verify your email address with the <code>/user/verify-email</code> api route:</p>
+                 <p><code>${user.verificationToken}</code></p>`;
+  }
+
+  try {
+    console.log(`auth.controller->sendVerificationEmail: message`, message);
+    await sendEmail({
+      to: user.email,
+      subject: "SignUp - Verification Email",
+      html: `<h4>Verify Email</h4><p>Thanks for registering!</p>${message}`,
+    });
+  } catch (error) {
+    console.log(`auth.controller->sendVerificationEmail: error`, error);
+  }
+}

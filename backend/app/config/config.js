@@ -27,4 +27,7 @@ module.exports = {
     secret: "JWT_SECRET_KEY",
     expiry: 86400, // 24hours
   },
+
+  /** Sendgrid API key */
+  sengridKey: process.env.SENDGRID_API_KEY,
 };

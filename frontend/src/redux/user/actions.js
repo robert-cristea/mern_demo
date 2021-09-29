@@ -1,4 +1,5 @@
 import { toast } from "react-toastify";
+import userService from "../../services/user.service";
 import {
   GET_ALL_USERS_REQUEST,
   GET_ALL_USERS_SUCCESS,
@@ -16,14 +17,13 @@ import {
   DELETE_USER_SUCCESS,
   DELETE_USER_FAIL,
 } from "./actionTypes";
-import userApi from "../../service/userApi";
 
 const userActions = {
   getAll: () => async (dispatch) => {
     dispatch({
       type: GET_ALL_USERS_REQUEST,
     });
-    const res = await userApi.getAll();
+    const res = await userService.getAll();
     console.log("userActions->getAll", res);
     if (res.data) {
       dispatch({
@@ -47,7 +47,7 @@ const userActions = {
     dispatch({
       type: RETRIEVE_USER_REQUEST,
     });
-    const res = await userApi.retrieve(userId);
+    const res = await userService.retrieve(userId);
     console.log("userActions->retrieve", res);
     if (res.data) {
       dispatch({
@@ -72,7 +72,7 @@ const userActions = {
       type: CREATE_USER_REQUEST,
     });
     console.log("userActions->create", user);
-    const res = await userApi.create(user);
+    const res = await userService.create(user);
     if (res.data) {
       dispatch({
         type: CREATE_USER_SUCCESS,
@@ -99,7 +99,7 @@ const userActions = {
       type: UPDATE_USER_REQUEST,
     });
     console.log("userActions->update", user);
-    const res = await userApi.update(user);
+    const res = await userService.update(user);
     if (res.data) {
       dispatch({
         type: UPDATE_USER_SUCCESS,
@@ -126,7 +126,7 @@ const userActions = {
       type: DELETE_USER_REQUEST,
     });
     console.log("userActions->delete", userId);
-    const res = await userApi.delete(userId);
+    const res = await userService.delete(userId);
     if (res.data) {
       dispatch({
         type: DELETE_USER_SUCCESS,

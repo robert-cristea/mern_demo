@@ -27,6 +27,9 @@ module.exports.validate = (method) => {
       ];
     }
 
+    case "verifyEmail": {
+      return [check("token", "token is required").not().isEmpty()];
+    }
     case "profile": {
       return [
         check("username", "username name is required").not().isEmpty(),

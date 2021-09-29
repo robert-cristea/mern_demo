@@ -30,6 +30,9 @@ app.get("/", (req, res) => {
 require("./app/routes/user.routes")(app);
 require("./app/routes/auth.routes")(app);
 require("./app/routes/book.routes")(app);
+app.use(function (req, res, next) {
+  return res.status(404).send("Not found");
+});
 
 // set port, listen for requests
 const PORT = config.PORT;

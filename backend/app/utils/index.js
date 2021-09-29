@@ -1,19 +1,20 @@
+const config = require("../config/config.js");
 const sgMail = require("@sendgrid/mail");
 const jwt = require("jsonwebtoken");
-const config = require("../config/config.js");
+const crypto = require("crypto");
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+sgMail.setApiKey(config.sengridKey);
 
-function sendEmail(mailOptions) {
+exports.sendEmail = (mailOptions) => {
   return new Promise((resolve, reject) => {
     sgMail.send(mailOptions, (error, result) => {
       if (error) return reject(error);
       return resolve(result);
     });
   });
-}
+};
 
-function generateJWTToken(user) {
+exports.generateJWTToken = (user) => {
   const { id, email, username } = user;
   const { jwt: jwtConfig } = config;
   const secret = jwtConfig.secret || "JWT_SECRET_KEY";
@@ -21,6 +22,8 @@ function generateJWTToken(user) {
   const payload = { id, email, username };
 
   return jwt.sign(payload, secret, { expiresIn });
-}
+};
 
-module.exports = { sendEmail, generateJWTToken };
+exports.randomTokenString = () => {
+  return crypto.randomBytes(40).toString("hex");
+};

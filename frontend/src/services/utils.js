@@ -1,5 +1,3 @@
-import { toast } from "react-toastify";
-
 export const handleError = (error) => {
   console.log("axios->handleError", error);
   let err = new Error();
@@ -11,10 +9,10 @@ export const handleError = (error) => {
     console.log("error.response.headers", error.response.headers);
 
     if (error.response.status === 401) {
-      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       window.location.reload();
     }
-    
+
     throw new Error(error.response.data.message || "Server error");
   } else if (error.request) {
     // The request was made but no response was received

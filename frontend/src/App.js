@@ -1,22 +1,23 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Router, Switch, Route, Link } from "react-router-dom";
-
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
-
+import PrivateRoute from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Profile from "./components/Profile";
+import RegisterSuccess from "./components/RegisterSuccess";
+import VerifyEmail from "./components/VerifyEmail";
+// import Profile from "./components/Profile";
 import Home from "./components/Home";
+import Dashboard from "./components/Dashboard";
 
 import { history } from "./helpers/history";
 
-// import AuthVerify from "./common/AuthVerify";
-import EventBus from "./common/EventBus";
 import authActions from "./redux/auth/actions";
 import alertActions from "./redux/alert/actions";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 
 const App = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -46,6 +47,13 @@ const App = () => {
                 Home
               </Link>
             </li>
+            {currentUser && (
+              <li className="nav-item">
+                <Link to={"/dashboard"} className="nav-link">
+                  Dashboard
+                </Link>
+              </li>
+            )}
           </div>
 
           {currentUser ? (
@@ -83,14 +91,11 @@ const App = () => {
             <Route exact path={["/", "/home"]} component={Home} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
-            {/* <Route exact path="/profile" component={Profile} />
-            <Route path="/user" component={BoardUser} />
-            <Route path="/mod" component={BoardModerator} />
-            <Route path="/admin" component={BoardAdmin} /> */}
+            <Route exact path="/register-success" component={RegisterSuccess} />
+            <Route exact path="/verify-email" component={VerifyEmail} />
+            <PrivateRoute exact path="/dashboard" component={Dashboard} />
           </Switch>
         </div>
-
-        {/* <AuthVerify logOut={logOut}/> */}
       </div>
     </Router>
   );

@@ -25,7 +25,6 @@ const authActions = {
       });
 
       const { data } = await authService.login(user);
-
       if (data.accessToken) {
         localStorage.setItem("user", JSON.stringify(data));
       }
@@ -40,27 +39,17 @@ const authActions = {
       });
 
       toast.success("Login success");
-
-      // history.push("/admin");
+      history.push("/dashboard");
     } catch (error) {
-      console.log("error", error);
-      if (!error.response) {
-        toast.warning("Can't find server!");
-        return;
-      }
-
+      toast.warning(error.message);
       dispatch({
         type: LOGIN_FAIL,
-        payload:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
+        payload: error.message,
       });
       dispatch({
         type: ALERT_ERROR,
-        payload: "login failed",
+        payload: "Login failed",
       });
-      toast.warning(error.response.data.message || "Server error");
     }
   },
 
@@ -71,26 +60,22 @@ const authActions = {
       });
 
       const { data } = await authService.register(user);
-
       dispatch({
         type: REGISTER_SUCCESS,
         payload: data,
       });
 
       toast.success("register success");
+      history.push("/register-success");
     } catch (error) {
-      if (!error.response) {
-        toast.warning("server not found");
-        return;
-      }
-
-      toast.warning(error.response.data.message || "server error");
+      toast.warning(error.message);
       dispatch({
         type: REGISTER_FAIL,
-        payload:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
+        payload: error.message,
+      });
+      dispatch({
+        type: ALERT_ERROR,
+        payload: "Register failed",
       });
     }
   },

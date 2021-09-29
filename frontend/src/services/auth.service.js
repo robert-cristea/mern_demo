@@ -6,17 +6,23 @@ import { API_URL } from "./config";
 const baseUrl = `${API_URL}/api/auth/`;
 
 const authService = {
-  register: (user) => {
-    console.log(`authService`, baseUrl, user);
+  register: async (user) => {
     try {
-      return axios.post(baseUrl + "signup", user);
+      return await axios.post(baseUrl + "signup", user);
     } catch (error) {
       return handleError(error);
     }
   },
-  login: (user) => {
+  login: async (user) => {
     try {
-      return axios.post(baseUrl + "signin", user);
+      return await axios.post(baseUrl + "signin", user);
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+  verifyEmail: async (token) => {
+    try {
+      return await axios.post(baseUrl + "verify-email", { token });
     } catch (error) {
       return handleError(error);
     }
