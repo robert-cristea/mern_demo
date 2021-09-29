@@ -4,13 +4,13 @@
 
 - Authentication
 - Authorization
-- Email verification
+- Account Email verification
 
 ## Tech stack
 
 - Nodejs
 - Express
-- Sequelize
+- Sequelize ORM
 - MySQL
 
 ## Getting Started
@@ -31,15 +31,17 @@
 
    Create a file with the following name and location `.env` and copy the contents from `.env.example` into it. Replace the values with your specific configuration. Don't worry, this file is in the `.gitignore` so it won't get pushed to github.
 
-   ```javasscript
-    NODE_ENV=development
-    PORT=8080
+   ```bash
+   NODE_ENV=development
+   PORT=8000
 
-    # Database
-    DB_HOST=your-db-host
-    DB_USER=your-db-username
-    DB_PASS=your-db-password
-    DB_NAME=your-db-name
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_USER=root
+   DB_PASS=
+   DB_NAME=mern
+
+   SENDGRID_API_KEY=SG.XXX
    ```
 
 3. Running the app locally
