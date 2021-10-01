@@ -51,3 +51,22 @@
    ```bash
    npm run dev
    ```
+
+4. Demo data  
+   Role
+
+   ```
+   admin
+   vendor
+   customer
+   ```
+
+   User
+
+   ```
+   username: admin
+   email: admin@admin.com
+   password: password
+
+
+   ```
